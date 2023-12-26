@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
   gender: {
     type: String,
     max: 50,
-    require: true,
+    // require: true,
   },
   dob: {
     type: String,

@@ -59,7 +59,7 @@ router.get("/get", (req, res) => {
 //get user by id
 router.get("/getUser/:id", async (req, res) => {
   try {
-    const isUser = User.findById({ _id: req.params.id });
+    const isUser = await User.findOne({ _id: req.params.id });
     isUser &&
       res.status(200).json({
         status: true,
@@ -71,6 +71,82 @@ router.get("/getUser/:id", async (req, res) => {
         status: false,
         message: "user not found",
       });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+//follow
+router.put("/follow/:id", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+
+    let isFollowed = false;
+    user?.followers.map((item) => {
+      if (item == req.body.userId) {
+        isFollowed = true;
+      }
+    });
+
+    if (isFollowed) {
+      const res1 = await User.updateOne(
+        { _id: req.params.id },
+        { $pull: { followers: req.body.userId } }
+      );
+      const res2 = await User.updateOne(
+        { _id: req.body.userId },
+        { $pull: { following: req.params.id } }
+      );
+      res
+        .status(200)
+        .json({ status: true, message: "unfollow user successfully" });
+    } else {
+      const res1 = await User.updateOne(
+        { _id: req.params.id },
+        { $push: { followers: req.body.userId } }
+      );
+      const res2 = await User.updateOne(
+        { _id: req.body.userId },
+        { $push: { following: req.params.id } }
+      );
+      res
+        .status(200)
+        .json({ status: true, message: "followed user successfully" });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+//unfollow
+router.put("/unfollow/:id", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+
+    let isFollowed = false;
+    user.followers.map((item) => {
+      if (item == req.body.userId) {
+        isFollowed = true;
+      }
+    });
+
+    if (!isFollowed) {
+      res
+        .status(200)
+        .json({ status: false, message: "you are not following this account" });
+    } else {
+      const res1 = await User.updateOne(
+        { _id: req.params.id },
+        { $pull: { followers: req.body.userId } }
+      );
+      const res2 = await User.updateOne(
+        { _id: req.body.userId },
+        { $pull: { following: req.params.id } }
+      );
+      res
+        .status(200)
+        .json({ status: false, message: "unfollowed user successfully" });
+    }
   } catch (error) {
     res.status(500).json(error);
   }

@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
           .status(200)
           .json({
             status: true,
-            message: "User found successfully",
+            message: "Login User successfully",
             data: user,
           });
       }else{
