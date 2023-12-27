@@ -10,6 +10,8 @@ const authRouter = require("./routes/auth");
 const postRouter = require("./routes/posts");
 const commentRouter = require("./routes/comments");
 
+const PORT = process.env.PORT || 8200;
+
 dotenv.config();
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -31,6 +33,6 @@ app.use("/socialapp/api/auth", authRouter);
 app.use("/socialapp/api/post", postRouter);
 app.use("/socialapp/api/post/comment", commentRouter);
 
-app.listen(8200, () => {
-  console.log("Server started on Port:", 8200);
+app.listen(PORT, () => {
+  console.log("Server started on Port:", PORT);
 });
